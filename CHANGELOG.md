@@ -1,42 +1,60 @@
 # Changelog
 
-## [4.1.0] - 2025-03-03
-
+## [4.2.0] - In Progress
 ### Added
-- Version information display in info modal
-- Build number tracking (YYYYMMDD.build_number format)
-- Improved audio initialization with better error handling
-- Dark/Light theme toggle with persistent preference
-- Responsive control bar with improved mobile layout
-- Active tones display with visual feedback
-- Category badges for frequency types
-- Search functionality for frequencies
-- Pin/Unpin system for favorite frequencies
-- Card and List view options
+- Frequency management modal with create, edit, and import/export functionality
+- Custom frequency creation form
+- Frequency editing capabilities
+- Import/Export system for frequency collections
+- Active tones section moved to main content area
+- Improved mobile layout and responsiveness
 
 ### Changed
-- Simplified to single file architecture (index.html)
-- Improved audio context initialization to comply with browser policies
-- Enhanced UI components with consistent styling
-- Better error handling and user feedback
-- Mobile-optimized controls and layouts
-- Improved button states and interactions
+- Moved active tones display from control bar to main content
+- Simplified control bar to single row layout
+- Updated UI components for better mobile experience
+- Improved theme system with better color management
 
 ### Fixed
-- Audio initialization issues on Firefox and other browsers
+- Stop All functionality improved
+- Active tones display updates
+- Pin/unpin system reliability
+- Mobile layout issues
+
+## [4.1.0] - 2024-03-03
+### Added
+- Version information display in info modal
+- Build number tracking
+- Improved audio initialization
+- Dark/light theme toggle
+- Responsive control bar
+- Active tones display
+- Category badges
+- Search functionality
+- Pin/unpin system
+- View options (cards/list)
+
+### Changed
+- Simplified architecture to single file
+- Improved audio context initialization
+- Enhanced UI components
+- Better error handling
+- Mobile optimization
+- Improved button states
+
+### Fixed
+- Audio initialization issues
 - Mobile permission UI layout
 - Volume control responsiveness
-- Theme persistence across sessions
-- Button hover states and touch interactions
-
-## [4.0.0] - 2025-03-02
+- Theme persistence
+- Button hover states
 
 ### Initial Release
 - Core binaural beats functionality
 - Basic frequency presets
 - Volume control
-- Play/Stop controls
-- Info modal with usage instructions
+- Play/stop controls
+- Info modal
 - Responsive design foundation
 
 ## [v3.0.0] - 2023-06-15

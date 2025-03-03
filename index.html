@@ -141,6 +141,64 @@
             margin-top: var(--space-sm);
         }
 
+        /* Header Actions */
+        .app-header__actions {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-top: var(--space-md);
+        }
+
+        .theme-toggle-button,
+        .view-toggle-button {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            padding: 6px 12px;
+            cursor: pointer;
+            color: white;
+            transition: all var(--transition-fast);
+        }
+
+        .theme-toggle-button:hover,
+        .view-toggle-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* View Toggle Group */
+        .view-toggle-group {
+            display: flex;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .view-toggle-button {
+            border: none;
+            border-radius: 0;
+            padding: 6px 8px;
+        }
+
+        .view-toggle-button:first-child {
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .view-toggle-button.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .view-toggle-button svg {
+            display: block;
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+        }
+
+        .theme-toggle-icon {
+            font-size: 1.2rem;
+        }
+
         /* Control Bar */
         .control-bar {
             position: fixed;
@@ -814,7 +872,31 @@
         <div class="container">
             <h1 class="app-title">Binaural Beats & Healing Frequencies</h1>
             <p class="app-subtitle">Brainwave Entrainment, Solfeggio Tones & Sound Therapy</p>
-            <button class="btn btn--info" id="showInfo">ℹ️ About Sound Frequencies</button>
+            <div class="app-header__actions">
+                <button class="theme-toggle-button" id="themeToggle" aria-label="Toggle theme">
+                    <span class="theme-toggle-icon">🌓</span>
+                </button>
+                <div class="view-toggle-group">
+                    <button class="view-toggle-button ${AppState.ui.view === 'cards' ? 'active' : ''}" data-view="cards">
+                        <svg class="icon" viewBox="0 0 24 24" width="24" height="24">
+                            <rect x="3" y="3" width="7" height="7" rx="1"/>
+                            <rect x="14" y="3" width="7" height="7" rx="1"/>
+                            <rect x="3" y="14" width="7" height="7" rx="1"/>
+                            <rect x="14" y="14" width="7" height="7" rx="1"/>
+                        </svg>
+                        <span class="visually-hidden">Card View</span>
+                    </button>
+                    <button class="view-toggle-button ${AppState.ui.view === 'list' ? 'active' : ''}" data-view="list">
+                        <svg class="icon" viewBox="0 0 24 24" width="24" height="24">
+                            <line x1="3" y1="6" x2="21" y2="6" stroke-width="2"/>
+                            <line x1="3" y1="12" x2="21" y2="12" stroke-width="2"/>
+                            <line x1="3" y1="18" x2="21" y2="18" stroke-width="2"/>
+                        </svg>
+                        <span class="visually-hidden">List View</span>
+                    </button>
+                </div>
+                <button class="btn btn--info" id="showInfo">ℹ️ About Sound Frequencies</button>
+            </div>
         </div>
     </header>
 
@@ -911,7 +993,7 @@
             },
             ui: {
                 theme: localStorage.getItem('theme') || 'light',
-                view: localStorage.getItem('view') || 'cards',
+                view: localStorage.getItem('view') || 'list',
                 controlBar: {
                     position: localStorage.getItem('controlBarPosition') || 'bottom',
                     minimized: false
@@ -1198,8 +1280,55 @@
             },
 
             stopAll() {
-                Object.keys(AppState.audio.oscillators).forEach(id => this.stopTone(id));
-                EventSystem.emit('allTonesStopped');
+                try {
+                    const activeIds = Object.keys(AppState.audio.oscillators);
+                    
+                    // Immediately stop and disconnect all oscillators
+                    activeIds.forEach(id => {
+                        const nodes = AppState.audio.oscillators[id];
+                        if (!nodes) return;
+
+                        try {
+                            if (nodes.left && nodes.right) {
+                                // Binaural beat cleanup
+                                nodes.left.oscillator.stop();
+                                nodes.right.oscillator.stop();
+                                nodes.left.gainNode.disconnect();
+                                nodes.right.gainNode.disconnect();
+                                if (nodes.merger) nodes.merger.disconnect();
+                            } else if (nodes.oscillator) {
+                                // Single tone cleanup
+                                nodes.oscillator.stop();
+                                nodes.gainNode.disconnect();
+                            }
+
+                            // Update play button state
+                            const playButton = document.querySelector(`.btn--play[data-id="${id}"]`);
+                            if (playButton) {
+                                playButton.classList.remove('playing');
+                                playButton.innerHTML = `<span class="visually-hidden">Play</span>▶`;
+                            }
+                        } catch (err) {
+                            console.warn(`Error cleaning up oscillator ${id}:`, err);
+                        }
+                    });
+
+                    // Reset oscillators state
+                    AppState.audio.oscillators = {};
+                    
+                    // Clear active tones container
+                    const activeTones = document.querySelector('.active-tones-container');
+                    if (activeTones) {
+                        activeTones.innerHTML = '';
+                    }
+
+                    EventSystem.emit('allTonesStopped');
+                } catch (error) {
+                    console.error('Error in stopAll:', error);
+                    // Force reset state even if cleanup fails
+                    AppState.audio.oscillators = {};
+                    EventSystem.emit('allTonesStopped');
+                }
             },
 
             setVolume(value) {
@@ -1592,29 +1721,6 @@
                         <span class="volume-display">${Math.round(AppState.audio.volume * 100)}%</span>
                     </div>
 
-                    <div class="control-bar__section control-bar__view-toggle">
-                        <button class="theme-toggle-button" id="themeToggle" aria-label="Toggle theme">
-                            <span class="theme-toggle-icon">🌓</span>
-                        </button>
-                        <button class="view-toggle-button ${AppState.ui.view === 'cards' ? 'active' : ''}" data-view="cards">
-                            <svg class="icon" viewBox="0 0 24 24" width="24" height="24">
-                                <rect x="3" y="3" width="7" height="7" rx="1"/>
-                                <rect x="14" y="3" width="7" height="7" rx="1"/>
-                                <rect x="3" y="14" width="7" height="7" rx="1"/>
-                                <rect x="14" y="14" width="7" height="7" rx="1"/>
-                            </svg>
-                            <span class="visually-hidden">Card View</span>
-                        </button>
-                        <button class="view-toggle-button ${AppState.ui.view === 'list' ? 'active' : ''}" data-view="list">
-                            <svg class="icon" viewBox="0 0 24 24" width="24" height="24">
-                                <line x1="3" y1="6" x2="21" y2="6" stroke-width="2"/>
-                                <line x1="3" y1="12" x2="21" y2="12" stroke-width="2"/>
-                                <line x1="3" y1="18" x2="21" y2="18" stroke-width="2"/>
-                            </svg>
-                            <span class="visually-hidden">List View</span>
-                        </button>
-                    </div>
-
                     <div class="control-bar__section control-bar__search">
                         <div class="search-container">
                             <input type="text" 
@@ -1692,33 +1798,6 @@
                         min-width: 3em;
                         text-align: right;
                         font-variant-numeric: tabular-nums;
-                    }
-
-                    /* View Toggle */
-                    .view-toggle-button {
-                        background: none;
-                        border: 1px solid var(--card-border);
-                        border-radius: 6px;
-                        padding: 6px;
-                        cursor: pointer;
-                        color: var(--text);
-                        transition: all var(--transition-fast);
-                    }
-
-                    .view-toggle-button:hover {
-                        background: var(--card-bg);
-                    }
-
-                    .view-toggle-button.active {
-                        background: var(--primary);
-                        border-color: var(--primary);
-                        color: white;
-                    }
-
-                    .view-toggle-button svg {
-                        display: block;
-                        fill: none;
-                        stroke: currentColor;
                     }
 
                     /* Search */
@@ -1858,46 +1937,6 @@
                         background: var(--danger);
                         color: white;
                     }
-
-                    /* Responsive Adjustments */
-                    @media (max-width: 768px) {
-                        .control-bar .container {
-                            flex-direction: column;
-                            align-items: stretch;
-                        }
-
-                        .control-bar__section {
-                            width: 100%;
-                        }
-
-                        .search-container {
-                            width: 100%;
-                        }
-
-                        .control-bar__actions {
-                            justify-content: space-between;
-                        }
-                    }
-
-                    /* Theme Toggle */
-                    .theme-toggle-button {
-                        background: none;
-                        border: 1px solid var(--card-border);
-                        border-radius: 6px;
-                        padding: 6px 12px;
-                        cursor: pointer;
-                        color: var(--text);
-                        transition: all var(--transition-fast);
-                    }
-
-                    .theme-toggle-button:hover {
-                        background: var(--card-bg);
-                        border-color: var(--primary);
-                    }
-
-                    .theme-toggle-icon {
-                        font-size: 1.2rem;
-                    }
                 `;
                 document.head.appendChild(style);
             },
@@ -1907,15 +1946,6 @@
                 const volumeSlider = document.getElementById('volume');
                 volumeSlider.addEventListener('input', (e) => {
                     AudioSystem.setVolume(parseFloat(e.target.value));
-                });
-
-                // View toggle
-                const viewButtons = document.querySelectorAll('.view-toggle-button');
-                viewButtons.forEach(button => {
-                    button.addEventListener('click', () => {
-                        const view = button.dataset.view;
-                        this.setView(view);
-                    });
                 });
 
                 // Search
@@ -1955,21 +1985,6 @@
                     volumeSlider.value = volume;
                     document.querySelector('.volume-display').textContent = `${Math.round(volume * 100)}%`;
                 });
-            },
-
-            setView(view) {
-                if (view === AppState.ui.view) return;
-                
-                AppState.ui.view = view;
-                localStorage.setItem('view', view);
-                
-                // Update button states
-                document.querySelectorAll('.view-toggle-button').forEach(button => {
-                    button.classList.toggle('active', button.dataset.view === view);
-                });
-                
-                this.render();
-                EventSystem.emit('viewChanged', view);
             },
 
             updateControlState() {
@@ -2249,6 +2264,24 @@
             // Set initial icon
             themeToggleBtn.querySelector('.theme-toggle-icon').textContent = 
                 AppState.ui.theme === 'light' ? '☀️' : '🌙';
+
+            // View toggle
+            const viewButtons = document.querySelectorAll('.view-toggle-button');
+            viewButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const view = button.dataset.view;
+                    AppState.ui.view = view;
+                    localStorage.setItem('view', view);
+                    
+                    // Update button states
+                    viewButtons.forEach(btn => {
+                        btn.classList.toggle('active', btn.dataset.view === view);
+                    });
+                    
+                    UISystem.render();
+                    EventSystem.emit('viewChanged', view);
+                });
+            });
 
             showInfoBtn.addEventListener('click', () => {
                 infoModal.classList.add('visible');

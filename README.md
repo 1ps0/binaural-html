@@ -1,102 +1,92 @@
 # Binaural Beats & Healing Frequencies
 
-A web-based application for exploring and experiencing therapeutic frequencies through binaural beats, solfeggio tones, and sound therapy. Built with vanilla JavaScript and modern web technologies.
+A web-based application for generating binaural beats, solfeggio frequencies, and other therapeutic tones. Built with vanilla JavaScript and the Web Audio API.
 
 ## Features
 
-- **Multiple Frequency Types**
-  - Binaural Beats for brainwave entrainment
-  - Solfeggio Frequencies for traditional healing
-  - Special frequencies including Earth resonance (Schumann)
+- 🎵 Generate binaural beats and healing frequencies
+- 🌓 Light/Dark theme support
+- 📱 Responsive design for all devices
+- 🎚️ Precise volume control
+- 📌 Pin favorite frequencies
+- 🔍 Search and filter frequencies
+- 📋 List and card views
+- ⚙️ Create and customize frequencies
+- 💾 Import/Export frequency collections
+- 🎧 Real-time frequency monitoring
 
-- **Intuitive Interface**
-  - Dark/Light theme support
-  - Card and List view options
-  - Responsive design for all devices
-  - Touch-friendly controls
+## Getting Started
 
-- **Advanced Audio Features**
-  - Real-time frequency generation
-  - Volume control with smooth transitions
-  - Multiple simultaneous tones
-  - Binaural beat stereo separation
+### Running Locally
 
-- **Organization**
-  - Search functionality
-  - Category filtering
-  - Pin favorite frequencies
-  - Active tones display
+1. **Desktop**: Simply drag `index.html` into Chrome/Edge
+2. **iOS**: Save to Files app and open with Safari
+3. **Android**: Open with Chrome from Downloads
 
-## Categories
+### Using Headphones
 
-- **Focus** (Beta/Gamma waves): 14-40 Hz
-- **Meditation** (Theta waves): 4-8 Hz
-- **Sleep** (Delta waves): 0.5-4 Hz
-- **Relaxation** (Alpha waves): 8-14 Hz
-- **Healing** (Solfeggio): Various frequencies
+For binaural beats to work effectively, stereo headphones are required. The effect is created by playing slightly different frequencies in each ear.
 
 ## Usage
 
-1. Visit the hosted version at: https://1ps0.github.io/binaural/
-2. Use quality headphones for optimal binaural beat effects
-3. Start with lower volumes and shorter sessions
-4. Pin your favorite frequencies for quick access
-5. Use the search to find specific frequencies
+### Basic Controls
 
-## Running Locally
+- **Play/Stop**: Click the play button on any frequency card
+- **Volume**: Use the slider in the control bar
+- **Theme**: Toggle light/dark theme with the moon/sun icon
+- **View**: Switch between list and card views
+- **Search**: Use the search bar to find frequencies
+- **Pin**: Save frequencies for quick access
 
-### Desktop
-Simply drag `index.html` into your browser window. For Chrome/Edge users, this is all you need.
+### Managing Frequencies
 
-Note: Some browsers may require a local server for audio to work. If needed:
-```bash
-# Using Python
-python -m http.server 8000
-# Then visit http://localhost:8000
-```
+1. Click the "Manage Frequencies" button
+2. Choose from:
+   - Create new frequencies
+   - Customize existing ones
+   - Import/Export your collection
 
-### iOS (iPhone/iPad)
-1. Long press the download link for `index.html` and choose "Download Linked File"
-2. Tap "Downloads" in Safari
-3. Tap the downloaded file
-4. Choose "Save to Files"
-5. Select a location (like "On My iPhone" or "iCloud Drive")
-6. Open the Files app, navigate to where you saved it
-7. Tap the file to open in Safari
+### Categories
 
-### Android
-1. Download `index.html` to your device
-2. Open with Chrome directly from your Downloads folder
-3. Optional: Add to Home Screen for quick access
-
-## Technical Details
-
-- Single file architecture (index.html)
-- No external dependencies
-- Uses Web Audio API for precise frequency generation
-- Local storage for user preferences
-- Mobile-first responsive design
-
-## Browser Support
-
-- Chrome/Edge (Recommended)
-- Firefox
-- Safari
-- Mobile browsers with Web Audio API support
+- **Focus**: Beta and Gamma frequencies for concentration
+- **Meditation**: Theta frequencies for deep states
+- **Sleep**: Delta frequencies for rest
+- **Relaxation**: Alpha frequencies for calm
+- **Healing**: Solfeggio and special frequencies
 
 ## Development
 
-1. Clone the repository
-2. Serve index.html through a web server (required for audio context)
-3. Make changes and test thoroughly
-4. Submit pull requests with clear descriptions
+### Project Structure
+
+The application uses a single-file architecture (`index.html`) with modular systems:
+
+- **AudioSystem**: Handles all audio generation
+- **FrequencySystem**: Manages frequency data
+- **UISystem**: Handles interface updates
+- **ThemeSystem**: Manages appearance
+- **EventSystem**: Coordinates communication
+
+### Roadmap
+
+See [BLUEPRINT.md](BLUEPRINT.md) for detailed development plans.
+
+### Contributing
+
+1. Check the [BLUEPRINT.md](BLUEPRINT.md) for planned features
+2. Review current issues in the Issues tab
+3. Submit a Pull Request with your changes
 
 ## Version History
 
-See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
-
-Current Version: 4.1.0 (Build 20250303.1)
+See [CHANGELOG.md](CHANGELOG.md) for version history.
 
 ## License
 
-MIT License - See LICENSE file for details 
+MIT License - See LICENSE file for details
+
+## Acknowledgments
+
+- Web Audio API
+- Modern browser capabilities
+- Scientific research on brainwave entrainment
+- Traditional healing frequency systems 
